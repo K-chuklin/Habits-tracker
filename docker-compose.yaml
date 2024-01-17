@@ -10,7 +10,7 @@ services:
     environment:
       PG_DATABASE: ${DATABASE}
       PG_USER: ${USER}
-      PG_PASSWORD: ${PASSWORD}
+      POSTGRES_PASSWORD: ${PASSWORD}
     volumes:
       - /var/lib/postgresql/pgdata
     healthcheck:
