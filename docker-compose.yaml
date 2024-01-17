@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: on-failure
+    container_name: db
+    env_file:
+      - ./.env
+    environment:
+      PG_DATABASE: ${DATABASE}
+      PG_USER: ${USER}
+      PG_PASSWORD: ${PASSWORD}
+    volumes:
+      - /var/lib/postgresql/pgdata
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "3306:3306"
+
+  app:
+    build: .
+    container_name: app
+    tty: true
+    command: >
+      python manage.py collectstatic --noinput
+      && python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py loaddata data.json
+      && python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - ./.env
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6370'
+
+  celery:
+    build: .
+    container_name: celery
+    tty: true
+    command: celery -A config worker -l INFO
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - app
+
+  celery_beat:
+    build: .
+    tty: true
+    command: celery -A config beat -l INFO -S django
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - app
