@@ -7,7 +7,7 @@
   1. Клоинровать репозиторий, выполнив комманду:
   
   ```bash
-  git clone https://github.com/Chuklin-k/cw_6.git
+  git clone https://github.com/K-chuklin/cw_8.git
    ```
   2. В дирректории проекта cоздайте файл .env на основе .env.example и заполните его реальными значениями;
   3. Запустит контейнеры с помощью Docker Compose:
@@ -15,6 +15,7 @@
   ```bash
   docker-composee up -d build
    ```
+  4. Доступ к локальному серверу будет доступен по адреесу 0.0.0.0:8000
 
 ### Права доступа
 
